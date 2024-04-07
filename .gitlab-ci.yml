@@ -1,0 +1,8 @@
+stages:
+  - quick
+  - build
+  - test
+  - deploy
+
+include:
+  - local: ".gitlab/ci/echo-ci-cd-variables.yml"
