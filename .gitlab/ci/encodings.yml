@@ -5,8 +5,5 @@ file-encoding:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   script:
     - apt-get update && apt-get install -y --no-install-recommends git nkf
-    - git diff --name-only $CI_MERGE_REQUEST_DIFF_BASE_SHA $CI_COMMIT_SHA -z | xargs --null nkf -g >/tmp/encodings.txt
-    - cat /tmp/encodings.txt
-    - wrong_encoding_count=$(grep -vE '(UTF-8|ASCII|BINARY)$' /tmp/encodings.txt | wc -l)
-    - echo $wrong_encoding_count
-    - if [ $wrong_encoding_count -gt 0 ]; then echo "The encoding of the following files is not UTF-8 or ASCII or BINARY."; grep -vE '(UTF-8|ASCII|BINARY)$' /tmp/encodings.txt; exit 1; fi
+    - git diff --name-only $CI_MERGE_REQUEST_DIFF_BASE_SHA $CI_COMMIT_SHA -z | xargs --null nkf -g | grep -vE '(UTF-8|ASCII|BINARY)$' | wc -l | grep -q '^0$'
+    - if [ $? -ne 0 ]; then echo "Some files are not UTF-8 encoded."; exit 1; fi
