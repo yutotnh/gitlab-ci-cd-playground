@@ -6,5 +6,5 @@ file-encoding:
   script:
     - apt-get update && apt-get install -y --no-install-recommends git nkf
     - git diff --name-only $CI_MERGE_REQUEST_DIFF_BASE_SHA $CI_COMMIT_SHA -z | xargs --null nkf -g >/tmp/encodings.txt
-    - wrong_encoding_count=$(grep -vE '(UTF-8|ASCII|BINARY)$' /tmp/encodings.txt || true | wc -l)
-    - if [ $wrong_encoding_count -gt 0 ]; then echo "The encoding of the following files is not UTF-8 or ASCII or BINARY."; grep -vE '(UTF-8|ASCII|BINARY)$' /tmp/encodings.txt || true; exit 1; fi
+    - wrong_encoding_count=$(grep -cvE '(UTF-8|ASCII|BINARY)$' /tmp/encodings.txt || true)
+    - if [ ${wrong_encoding_count} -gt 0 ]; then echo "The encoding of the following files is not UTF-8 or ASCII or BINARY."; grep -vE '(UTF-8|ASCII|BINARY)$' /tmp/encodings.txt || true; exit 1; fi
